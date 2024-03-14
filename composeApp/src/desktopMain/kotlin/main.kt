@@ -35,6 +35,9 @@ import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.xml.sax.InputSource
+import java.awt.Toolkit
+import java.awt.datatransfer.Clipboard
+import java.awt.datatransfer.StringSelection
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -52,7 +55,6 @@ fun main() =  //singleApplication
 
             var file: File? by remember { mutableStateOf(null) }
             var isFileChooserOpen by remember { mutableStateOf(false) }
-
             if (isFileChooserOpen) {
                 FileDialog(
                     onCloseRequest = {
@@ -64,11 +66,13 @@ fun main() =  //singleApplication
                             file = resultFile
 
 
-                            /*val byteArrayOutputStream = ByteArrayOutputStream()
+                            val byteArrayOutputStream = ByteArrayOutputStream()
                             ImageIO.write(imagePng, "png", byteArrayOutputStream)
                             val base64 = Base64.getEncoder()
                                 .encodeToString(byteArrayOutputStream.toByteArray())
-                            println("Base64: $base64")*/
+                            val selector = StringSelection(base64)
+                            Toolkit.getDefaultToolkit().systemClipboard.setContents(selector, selector)
+                            println("Base64: $base64")
                         }
                     }
                 )
@@ -84,9 +88,18 @@ fun main() =  //singleApplication
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                        isFileChooserOpen = true
-                    }) {
+                            isFileChooserOpen = true
+                        }
+                    ) {
                         Text("Open")
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            file = null
+                        }
+                    ) {
+                        Text("Clear space")
                     }
                 }
                 loadImage(file)
@@ -120,15 +133,14 @@ fun main() =  //singleApplication
 @Composable
 fun loadImage(file: File?) {
     if (file != null) {
+        println("Image: $file")
         AsyncImage(
             load = { loadImageBitmap(file) },
             painterFor = { remember { BitmapPainter(it) } },
             contentDescription = "Sample",
-            modifier = Modifier.width(500.dp)
+            modifier = Modifier.fillMaxWidth()
         )
-        Snackbar() {
-            Text("File loaded successfully")
-        }
+        Text("File transformed to monochrome and copied to clipboard.")
     } else {
         Text("Please select the image file to load.")
     }
@@ -142,7 +154,7 @@ fun <T> AsyncImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
 ) {
-    val image: T? by produceState<T?>(null, key1 = null) {
+    val image: T? by produceState<T?>(null) {
         value = withContext(Dispatchers.IO) {
             try {
                 load()
@@ -162,6 +174,8 @@ fun <T> AsyncImage(
             contentScale = contentScale,
             modifier = modifier
         )
+    } else {
+        println("Not loaded yet...")
     }
 }
 
