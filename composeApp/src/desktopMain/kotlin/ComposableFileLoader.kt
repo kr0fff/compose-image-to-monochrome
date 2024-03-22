@@ -1,30 +1,11 @@
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.window.AwtWindow
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.jetbrains.skia.Bitmap
-import java.awt.FileDialog
-import java.awt.Frame
 import java.awt.Window
 import java.io.File
-import java.io.FilenameFilter
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 
@@ -35,7 +16,7 @@ fun loaderApplication() = application {
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
-fun FileDialog(
+fun fileDialog(
     parent: Window? = null,
     onCloseRequest: (result: String?) -> Unit
 ) {
@@ -55,39 +36,3 @@ fun FileDialog(
         }
     }
 }
-/*
-fun toMonochrome(bitmap: Bitmap): Bitmap {
-    val matrix = ColorMatrix()
-    matrix.setSaturation(0f)
-
-    val paint = Paint()
-    paint.colorFilter = ColorMatrixColorFilter(matrix)
-
-    val canvas = Canvas(bitmap)
-    canvas.drawBitmap(bitmap, 0f, 0f, paint)
-
-    return bitmap
-}
-*/
-
-/*
-@Composable
-fun FileDialog(
-    parent: Frame? = null,
-    onCloseRequest: (result: String?) -> Unit,
-    customFilter: FilenameFilter
-) = AwtWindow(
-    create = {
-         object : FileDialog(parent, "Choose a file", LOAD) {
-            override fun setVisible(value: Boolean) {
-                super.setVisible(value)
-                super.setDirectory("D://Games")
-                super.setFilenameFilter(customFilter)
-                if (value) {
-                    onCloseRequest(file)
-                }
-            }
-        }
-    },
-    dispose = FileDialog::dispose
-)*/

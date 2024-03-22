@@ -1,13 +1,10 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,7 +23,6 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.res.loadXmlImageVector
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -36,7 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.xml.sax.InputSource
 import java.awt.Toolkit
-import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.StringSelection
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -56,7 +51,7 @@ fun main() =  //singleApplication
             var file: File? by remember { mutableStateOf(null) }
             var isFileChooserOpen by remember { mutableStateOf(false) }
             if (isFileChooserOpen) {
-                FileDialog(
+                fileDialog(
                     onCloseRequest = {
                         isFileChooserOpen = false
                         if (it != null) {
@@ -65,11 +60,7 @@ fun main() =  //singleApplication
                             ImageIO.write(imagePng, "png", resultFile)
                             file = resultFile
 
-
-                            val byteArrayOutputStream = ByteArrayOutputStream()
-                            ImageIO.write(imagePng, "png", byteArrayOutputStream)
-                            val base64 = Base64.getEncoder()
-                                .encodeToString(byteArrayOutputStream.toByteArray())
+                            val base64 = imageToBase64(imagePng)
                             val selector = StringSelection(base64)
                             Toolkit.getDefaultToolkit().systemClipboard.setContents(selector, selector)
                             println("Base64: $base64")
@@ -99,29 +90,6 @@ fun main() =  //singleApplication
                 loadImage(file)
             }
         }
-        /* val density = LocalDensity.current
-         Column {
-             AsyncImage(
-                 load = { loadImageBitmap(File("sample.png")) },
-                 painterFor = { remember { BitmapPainter(it) } },
-                 contentDescription = "Sample",
-                 modifier = Modifier.width(200.dp)
-             )
-             AsyncImage(
-                 load = { loadSvgPainter("https://github.com/JetBrains/compose-multiplatform/raw/master/artwork/idea-logo.svg", density) },
-                 painterFor = { it },
-                 contentDescription = "Idea logo",
-                 contentScale = ContentScale.FillWidth,
-                 modifier = Modifier.width(200.dp)
-             )
-             *//*AsyncImage(
-            load = { loadXmlImageVector(File("compose-logo.xml"), density) },
-            painterFor = { rememberVectorPainter(it) },
-            contentDescription = "Compose logo",
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.width(200.dp)
-        )*//*
-    }*/
     }
 
 @Composable
@@ -153,8 +121,6 @@ fun <T> AsyncImage(
             try {
                 load()
             } catch (e: IOException) {
-                // instead of printing to console, you can also write this to log,
-                // or show some error placeholder
                 e.printStackTrace()
                 null
             }
