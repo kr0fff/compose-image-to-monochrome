@@ -13,6 +13,12 @@ import androidx.compose.ui.window.AwtWindow
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.skia.Bitmap
 import java.awt.FileDialog
 import java.awt.Frame
@@ -29,23 +35,24 @@ fun loaderApplication() = application {
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
-@Composable
 fun FileDialog(
     parent: Window? = null,
     onCloseRequest: (result: String?) -> Unit
 ) {
-    val fileChooser = JFileChooser()
-    fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
-    fileChooser.currentDirectory = File("C:/Downloads") // Set initial directory
+    CoroutineScope(Dispatchers.IO).launch {
+        val fileChooser = JFileChooser()
+        fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
+        fileChooser.currentDirectory = File("C:/Downloads") // Set initial directory
 
-    fileChooser.fileFilter = FileNameExtensionFilter("Images", "jpg", "png", "gif", "bmp")
-    fileChooser.isAcceptAllFileFilterUsed = false
+        fileChooser.fileFilter = FileNameExtensionFilter("Images", "jpg", "png", "gif", "bmp")
+        fileChooser.isAcceptAllFileFilterUsed = false
 
 
-    if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-        onCloseRequest(fileChooser.selectedFile.path)
-    } else {
-        onCloseRequest(null)
+        if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+            onCloseRequest(fileChooser.selectedFile.path)
+        } else {
+            onCloseRequest(null)
+        }
     }
 }
 /*

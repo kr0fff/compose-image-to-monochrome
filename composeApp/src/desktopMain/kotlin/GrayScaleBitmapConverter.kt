@@ -1,8 +1,10 @@
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.util.Base64
 import javax.imageio.ImageIO
@@ -58,6 +60,7 @@ fun imageToBase64(buffer: BufferedImage): String {
     val byteArray = byteArrayOutputStream.toByteArray()
     return Base64.getEncoder().encodeToString(byteArray)
 }
+
 fun toMonochrome(img: BufferedImage): BufferedImage {
     val grayImage = BufferedImage(img.width, img.height, BufferedImage.TYPE_BYTE_BINARY)
 
@@ -73,9 +76,9 @@ fun toMonochrome(img: BufferedImage): BufferedImage {
             grayImage.setRGB(x, y, newRgb)
         }
     }
-
     return grayImage
 }
+
 fun get2DPixelByteArrayMonochrome(sampleImage: BufferedImage): ByteArray {
     val width = sampleImage.width
     val height = sampleImage.height

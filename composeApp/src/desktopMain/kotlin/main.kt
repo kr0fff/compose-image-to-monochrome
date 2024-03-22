@@ -88,18 +88,12 @@ fun main() =  //singleApplication
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
+                            file = null
                             isFileChooserOpen = true
                         }
                     ) {
                         Text("Open")
-                    }
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            file = null
-                        }
-                    ) {
-                        Text("Clear space")
+                        println("File: $file")
                     }
                 }
                 loadImage(file)
